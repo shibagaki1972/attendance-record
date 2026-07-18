@@ -1,0 +1,335 @@
+--- START OF FILE 現場出面表06.html ---
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>出面帳 Pro | 修正版</title>
+<!-- PWA 設定 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#10233F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@700;900&family=Noto+Sans+JP:wght@400;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#10233F; --navy-2:#16305A; --steel:#2C4870; --steel-light:#5B7DA6;
+    --paper:#EEF2F6; --paper-deep:#E3EAF1; --grid-line:#C4D0DC;
+    --amber:#F0A202; --red:#D6455A; --green:#2F9E63; --white:#FFFFFF;
+  }
+  body{ font-family:'Noto Sans JP', sans-serif; color:#16222F; background-color:var(--paper); margin:0; -webkit-font-smoothing:antialiased; }
+  .disp{ font-family:'Zen Kaku Gothic New', sans-serif; font-weight:900; }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 20px 80px; }
+  .topbar{ background:linear-gradient(180deg, var(--ink-navy), var(--navy-2)); border-bottom:6px solid var(--amber); color:#fff; padding:15px 0; }
+  .topbar-inner{ max-width:1120px; margin:0 auto; padding:0 20px; display:flex; align-items:center; justify-content:space-between; }
+  .btn-back{ background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; }
+  .panel{ background:var(--white); border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.05); padding:20px; margin-bottom:20px; border:1px solid rgba(0,0,0,0.05); }
+  .tabs{ display:flex; gap:5px; margin-bottom:20px; border-bottom:2px solid var(--grid-line); }
+  .tab-btn{ background:none; border:none; padding:12px 20px; font-weight:700; color:var(--steel); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; }
+  .tab-btn.active{ color:var(--ink-navy); border-bottom-color:var(--amber); }
+  .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  input, select{ border:1.5px solid var(--grid-line); border-radius:8px; padding:10px; font-size:14px; outline:none; }
+  .btn{ border:none; border-radius:8px; padding:10px 20px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+  .btn-primary{ background:var(--ink-navy); color:#fff; }
+  .btn-amber{ background:var(--amber); color:var(--ink-navy); }
+  .btn-ghost{ background:transparent; color:var(--steel); border:1.5px solid var(--grid-line); }
+  .btn-danger{ color:var(--red); background:none; border:none; cursor:pointer; font-size:12px; font-weight:700; padding:4px 8px; border-radius:4px; }
+  .btn-danger:hover{ background:rgba(214,69,90,0.1); }
+  .site-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:15px; }
+  .site-card{ background:#fff; border-radius:10px; padding:20px; border-left:6px solid var(--amber); box-shadow:0 2px 5px rgba(0,0,0,0.05); }
+  .company-card{ border:1px solid var(--grid-line); border-radius:10px; margin-bottom:15px; overflow:hidden; background:#fff; }
+  .company-head{ background:var(--paper-deep); padding:10px 15px; font-weight:700; display:flex; justify-content:space-between; align-items:center; }
+  .worker-chip-list{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+  .worker-chip{ background:#eee; padding:5px 8px 5px 12px; border-radius:20px; font-size:13px; display:flex; align-items:center; gap:6px; }
+  .del-wk{ color:#999; cursor:pointer; font-size:16px; line-height:1; }
+  .company-tab-list{ display:flex; flex-wrap:wrap; gap:8px; margin:15px 0; }
+  .company-tab{ background:#fff; border:1.5px solid var(--grid-line); padding:8px 16px; border-radius:20px; font-size:13px; font-weight:700; cursor:pointer; }
+  .company-tab.active{ background:var(--ink-navy); color:#fff; border-color:var(--ink-navy); }
+  .worker-row{ display:flex; align-items:center; gap:15px; padding:12px; border-bottom:1px solid #eee; cursor:pointer; }
+  .table-scroll{ overflow-x:auto; background:#fff; border-radius:8px; border:1px solid var(--grid-line); }
+  table{ border-collapse:collapse; width:100%; font-size:12px; min-width:800px; }
+  th, td{ border:1px solid var(--grid-line); padding:8px 4px; text-align:center; }
+  thead th{ background:var(--ink-navy); color:#fff; position:sticky; top:0; }
+  .name-cell{ position:sticky; left:0; background:#fff; text-align:left; padding-left:10px; min-width:140px; z-index:2; }
+  .present-mark{ color:var(--green); font-weight:900; font-size:16px; }
+  .stamp{ width:64px; height:64px; border:2px solid var(--ink-navy); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; }
+  #toast-root{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:1000; }
+  .toast{ background:var(--ink-navy); color:#fff; padding:12px 25px; border-radius:30px; box-shadow:0 5px 15px rgba(0,0,0,0.2); margin-top:10px; }
+  @media print{ .no-print{ display:none; } }
+</style>
+</head>
+<body>
+<div id="toast-root"></div>
+<div id="app"></div>
+
+<script>
+/** 
+ * Service Worker Registration
+ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('SW registered:', reg);
+    }).catch(err => {
+      console.log('SW registration failed:', err);
+    });
+  });
+}
+
+/** 
+ * 1. Database Logic (以下、既存のコードと同じ)
+ */
+const DB_NAME = 'DemenPro_v3_2';
+const DB_VERSION = 1;
+
+class DB {
+  constructor() { this.db = null; }
+  async init() {
+    return new Promise((res, rej) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        db.createObjectStore('sites', { keyPath: 'id' });
+        db.createObjectStore('companies', { keyPath: 'id' });
+        db.createObjectStore('workers', { keyPath: 'id' });
+        const att = db.createObjectStore('attendance', { keyPath: 'id' });
+        att.createIndex('site_date', ['siteId', 'date'], { unique: false });
+      };
+      req.onsuccess = (e) => { this.db = e.target.result; res(); };
+      req.onerror = rej;
+    });
+  }
+  async getAll(name) {
+    return new Promise(res => {
+      const tx = this.db.transaction(name, 'readonly');
+      tx.objectStore(name).getAll().onsuccess = (e) => res(e.target.result || []);
+    });
+  }
+  async put(name, data) {
+    return new Promise(res => {
+      const tx = this.db.transaction(name, 'readwrite');
+      tx.objectStore(name).put(data);
+      tx.oncomplete = () => res();
+    });
+  }
+  async delete(name, id) {
+    return new Promise(res => {
+      const tx = this.db.transaction(name, 'readwrite');
+      tx.objectStore(name).delete(id);
+      tx.oncomplete = () => res();
+    });
+  }
+  async clearAndSaveAttendance(siteId, companyId, date, workerIds) {
+    return new Promise(async (res) => {
+      const tx = this.db.transaction('attendance', 'readwrite');
+      const store = tx.objectStore('attendance');
+      const idx = store.index('site_date');
+      const range = IDBKeyRange.only([siteId, date]);
+      idx.openCursor(range).onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          if (cursor.value.companyId === companyId) cursor.delete();
+          cursor.continue();
+        } else {
+          workerIds.forEach(wId => {
+            store.put({ id: `att_${Date.now()}_${Math.random()}`, siteId, companyId, date, workerId: wId });
+          });
+        }
+      };
+      tx.oncomplete = () => res();
+    });
+  }
+}
+
+const storage = new DB();
+const state = {
+  screen: 'home', siteId: null, tab: 'roster',
+  data: { sites:[], companies:[], workers:[] },
+  entry: { date: new Date().toISOString().split('T')[0], companyId: null },
+  report: { month: new Date().toISOString().slice(0, 7), companyId: null }
+};
+
+async function refreshData() {
+  state.data.sites = await storage.getAll('sites');
+  state.data.companies = await storage.getAll('companies');
+  state.data.workers = await storage.getAll('workers');
+}
+
+const Actions = {
+  async addSite() {
+    const input = document.getElementById('new-site-name');
+    if (!input.value.trim()) return;
+    await storage.put('sites', { id: 'site_'+Date.now(), name: input.value.trim() });
+    input.value = ''; await refreshData(); render();
+  },
+  async openSite(id) {
+    state.siteId = id; state.screen = 'site'; state.tab = 'roster';
+    await refreshData();
+    const cos = state.data.companies.filter(c => c.siteId === id);
+    state.entry.companyId = cos[0]?.id || null;
+    state.report.companyId = cos[0]?.id || null;
+    render();
+  },
+  async addCompany() {
+    const input = document.getElementById('new-co-name');
+    const name = input.value.trim();
+    if (!name) return;
+    const newId = 'co_'+Date.now();
+    await storage.put('companies', { id: newId, siteId: state.siteId, name });
+    await refreshData();
+    if (!state.entry.companyId) state.entry.companyId = newId;
+    if (!state.report.companyId) state.report.companyId = newId;
+    input.value = ''; render();
+  },
+  async deleteCompany(id) {
+    if (!confirm('この会社を削除しますか？')) return;
+    const wks = state.data.workers.filter(w => w.companyId === id);
+    for(let w of wks) await storage.delete('workers', w.id);
+    await storage.delete('companies', id);
+    await refreshData();
+    if (state.entry.companyId === id) state.entry.companyId = null;
+    if (state.report.companyId === id) state.report.companyId = null;
+    render();
+  },
+  async addWorker(coId) {
+    const input = document.getElementById('new-wk-'+coId);
+    if (!input.value.trim()) return;
+    await storage.put('workers', { id: 'wk_'+Date.now(), siteId: state.siteId, companyId: coId, name: input.value.trim() });
+    input.value = ''; await refreshData(); render();
+  },
+  async deleteWorker(id) {
+    if (!confirm('削除しますか？')) return;
+    await storage.delete('workers', id);
+    await refreshData(); render();
+  },
+  async saveAttendance() {
+    const { date, companyId } = state.entry;
+    if (!companyId) {
+        const cos = state.data.companies.filter(c => c.siteId === state.siteId);
+        if (cos.length > 0) {
+            state.entry.companyId = cos[0].id;
+            return Actions.saveAttendance();
+        } else {
+            toast('会社が登録されていません');
+            return;
+        }
+    }
+    const checks = document.querySelectorAll('.wk-cb:checked');
+    const wIds = Array.from(checks).map(c => c.dataset.id);
+    await storage.clearAndSaveAttendance(state.siteId, companyId, date, wIds);
+    toast('保存完了しました');
+    render();
+  }
+};
+
+function toast(m) {
+  const r = document.getElementById('toast-root');
+  const e = document.createElement('div'); e.className = 'toast'; e.textContent = m;
+  r.appendChild(e); setTimeout(() => e.remove(), 2000);
+}
+
+async function render() {
+  const app = document.getElementById('app');
+  let html = `<div class="topbar no-print"><div class="topbar-inner">
+    <div class="disp" style="font-size:20px;">出面帳 Pro</div>
+    ${state.screen === 'site' ? `<button class="btn-back" onclick="state.screen='home';render()">← 戻る</button>` : ''}
+  </div></div>`;
+  if (state.screen === 'home') html += renderHome();
+  else html += await renderSite();
+  app.innerHTML = html;
+}
+
+function renderHome() {
+  return `<div class="wrap" style="margin-top:30px">
+    <div class="panel"><h2>現場を登録</h2><div class="row"><input id="new-site-name" style="flex:1" placeholder="現場名"><button class="btn btn-primary" onclick="Actions.addSite()">追加</button></div></div>
+    <div class="site-grid">
+      ${state.data.sites.map(s => `<div class="site-card"><div class="disp">${s.name}</div><button class="btn btn-amber" style="margin-top:15px" onclick="Actions.openSite('${s.id}')">開く</button></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+async function renderSite() {
+  const site = state.data.sites.find(s => s.id === state.siteId);
+  const cos = state.data.companies.filter(c => c.siteId === state.siteId);
+  if (cos.length > 0 && !state.entry.companyId) state.entry.companyId = cos[0].id;
+  if (cos.length > 0 && !state.report.companyId) state.report.companyId = cos[0].id;
+  let html = `<div class="wrap" style="margin-top:20px">
+    <div class="disp no-print" style="font-size:22px;margin-bottom:20px">🏗 ${site.name}</div>
+    <div class="tabs no-print">
+      <button class="tab-btn ${state.tab==='roster'?'active':''}" onclick="state.tab='roster';render()">名簿</button>
+      <button class="tab-btn ${state.tab==='entry'?'active':''}" onclick="state.tab='entry';render()">出勤入力</button>
+      <button class="tab-btn ${state.tab==='report'?'active':''}" onclick="state.tab='report';render()">出面表</button>
+    </div>`;
+  if (state.tab === 'roster') html += renderRoster(cos);
+  else if (state.tab === 'entry') html += await renderEntry(cos);
+  else html += await renderReport(cos);
+  html += `</div>`;
+  return html;
+}
+
+function renderRoster(cos) {
+  return `<div class="panel"><h2>会社追加</h2><div class="row"><input id="new-co-name" style="flex:1"><button class="btn btn-primary" onclick="Actions.addCompany()">追加</button></div></div>
+    ${cos.map(co => {
+      const wks = state.data.workers.filter(w => w.companyId === co.id);
+      return `<div class="company-card"><div class="company-head">🏢 ${co.name}<button class="btn-danger" onclick="Actions.deleteCompany('${co.id}')">削除</button></div><div style="padding:15px">
+        <div class="worker-chip-list">${wks.map(w => `<div class="worker-chip">${w.name}<span class="del-wk" style="cursor:pointer" onclick="Actions.deleteWorker('${w.id}')">×</span></div>`).join('')}</div>
+        <div class="row"><input id="new-wk-${co.id}" style="flex:1"><button class="btn btn-ghost" onclick="Actions.addWorker('${co.id}')">作業員追加</button></div>
+      </div></div>`;
+    }).join('')}`;
+}
+
+async function renderEntry(cos) {
+  if (!cos.length) return `<div class="panel">会社を登録してください</div>`;
+  const curCoId = state.entry.companyId;
+  const wks = state.data.workers.filter(w => w.companyId === curCoId);
+  const allAtt = await storage.getAll('attendance');
+  const activeSet = new Set(allAtt.filter(a => a.siteId === state.siteId && a.date === state.entry.date && a.companyId === curCoId).map(a => a.workerId));
+  return `<div class="panel">
+    <div class="row" style="margin-bottom:20px"><input type="date" value="${state.entry.date}" onchange="state.entry.date=this.value;render()"></div>
+    <div class="company-tab-list">
+      ${cos.map(c => `<button class="company-tab ${curCoId===c.id?'active':''}" onclick="state.entry.companyId='${c.id}';render()">${c.name}</button>`).join('')}
+    </div>
+    <div style="margin-top:15px; border-top:1px solid #eee">
+      ${wks.map(w => `<label class="worker-row"><input type="checkbox" class="wk-cb" data-id="${w.id}" ${activeSet.has(w.id)?'checked':''}><span>${w.name}</span></label>`).join('')}
+    </div>
+    <button class="btn btn-amber" style="width:100%; margin-top:20px; justify-content:center; padding:15px" onclick="Actions.saveAttendance()">✅ 出勤を確定保存</button>
+  </div>`;
+}
+
+async function renderReport(cos) {
+  const curCoId = state.report.companyId;
+  if (!curCoId) return `<div>名簿がありません</div>`;
+  const [y, m] = state.report.month.split('-').map(Number);
+  const days = new Date(y, m, 0).getDate();
+  const wks = state.data.workers.filter(w => w.companyId === curCoId);
+  const allAtt = await storage.getAll('attendance');
+  const attMap = new Set();
+  allAtt.filter(a => a.siteId === state.siteId && a.companyId === curCoId && a.date.startsWith(state.report.month))
+    .forEach(a => attMap.add(`${a.workerId}_${parseInt(a.date.split('-')[2])}`));
+  return `<div class="panel no-print"><div class="row">
+      <input type="month" value="${state.report.month}" onchange="state.report.month=this.value;render()"><select onchange="state.report.companyId=this.value;render()">
+      ${cos.map(c => `<option value="${c.id}" ${curCoId===c.id?'selected':''}>${c.name}</option>`).join('')}</select>
+      <button class="btn btn-ghost" onclick="window.print()">印刷</button>
+    </div></div>
+    <div class="panel"><div style="display:flex; justify-content:space-between; margin-bottom:15px">
+      <div><div class="disp" style="font-size:20px">出面明細表</div><div>${y}年${m}月</div></div>
+      <div style="display:flex; gap:10px"><div class="stamp">元請</div><div class="stamp">下請</div></div>
+    </div>
+    <div class="table-scroll"><table><thead><tr><th class="name-cell">氏名</th>${Array.from({length:days},(_,i)=>`<th>${i+1}</th>`).join('')}<th>計</th></tr></thead>
+    <tbody>${wks.map(w => {
+      let sum = 0;
+      const cells = Array.from({length:days}, (_,i) => {
+        const ok = attMap.has(`${w.id}_${i+1}`); if(ok) sum++;
+        return `<td>${ok?'<span class="present-mark">〇</span>':''}</td>`;
+      }).join('');
+      return `<tr><td class="name-cell">${w.name}</td>${cells}<td>${sum}</td></tr>`;
+    }).join('')}</tbody></table></div></div>`;
+}
+
+(async () => { await storage.init(); await refreshData(); render(); })();
+</script>
+</body>
+</html>
