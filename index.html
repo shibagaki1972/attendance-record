@@ -613,19 +613,16 @@ const Actions = {
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 10;
-      const imgW = pageW - margin * 2;
-      const imgH = canvas.height * imgW / canvas.width;
-      let heightLeft = imgH;
-      let position = margin;
-      pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
-      heightLeft -= (pageH - margin * 2);
-      while (heightLeft > 0) {
-        position = margin - (imgH - heightLeft);
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
-        heightLeft -= (pageH - margin * 2);
-      }
+      const margin = 8;
+      const availW = pageW - margin * 2;
+      const availH = pageH - margin * 2;
+      // 1社分が必ずA4横1ページに収まるよう、縦横どちらも収まる縮小率を採用する
+      const ratio = Math.min(availW / canvas.width, availH / canvas.height);
+      const imgW = canvas.width * ratio;
+      const imgH = canvas.height * ratio;
+      const x = margin + (availW - imgW) / 2;
+      const y = margin + (availH - imgH) / 2;
+      pdf.addImage(imgData, 'PNG', x, y, imgW, imgH);
       const site = state.data.sites.find(s => s.id === state.siteId);
       const co = state.data.companies.find(c => c.id === state.report.companyId);
       const fname = `出面表_${site ? site.name : '現場'}_${co ? co.name : '会社'}_${state.report.month}.pdf`;
